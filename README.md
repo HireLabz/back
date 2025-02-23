@@ -94,6 +94,14 @@ deno task test
 - `GET /api/applications/:applicationId` - Get single application
 - `PUT /api/applications/:applicationId` - Update application status
 
+### Interviews
+- `POST /api/interviews` - Create interview record
+- `GET /api/interviews/:interviewId` - Get interview with analysis
+
+### Analysis
+- `POST /api/analysis` - Create skill analysis
+- `GET /api/analysis/:analysisId` - Get specific analysis
+
 ### Email
 - `POST /api/email/send-invite` - Send interview invitation
 - `POST /api/email/send-reminder` - Send interview reminder
@@ -281,42 +289,64 @@ curl -X POST http://localhost:8000/api/webhook/twilio/status \
 -d "CallSid=CA202d9ee8b1bb71f2ee332b80cb6f9b3d&CallStatus=completed&Duration=5&Caller=%2B16172512600&Timestamp=Sun%2C%2023%20Feb%202025%2001%3A09%3A55%20%2B0000"
 ```
 
-### Expected Responses
+### Interview Management
 
-1. Successful job creation:
-```json
-{
-    "message": "Job created successfully",
-    "data": {
-        "id": "123",
-        "job_name": "Senior Software Engineer",
-        "job_description": "...",
-        "section_description": "...",
-        "sections": {
-            "technical": ["System Design", "Coding", "Architecture"],
-            "behavioral": ["Leadership", "Communication", "Problem Solving"]
-        },
-        "status": true,
-        "created_at": "2024-02-23T01:09:55.976Z"
-    }
-}
+1. Create an interview record:
+```bash
+curl -X POST http://localhost:8000/api/interviews \
+-H "Content-Type: application/json" \
+-d '{
+    "applicant_id": "123",
+    "transcript": "Interview transcript text...",
+    "overall_rating": 85,
+    "summary": "Strong candidate with excellent technical skills..."
+}'
 ```
 
-2. Successful application submission:
+2. Get interview with analysis:
+```bash
+curl http://localhost:8000/api/interviews/456
+```
+
+### Analysis Management
+
+1. Create a skill analysis:
+```bash
+curl -X POST http://localhost:8000/api/analysis \
+-H "Content-Type: application/json" \
+-d '{
+    "interview_id": "456",
+    "skill_name": "System Design",
+    "skill_score": 90,
+    "skill_reasoning": "Demonstrated strong understanding of distributed systems..."
+}'
+```
+
+2. Get specific analysis:
+```bash
+curl http://localhost:8000/api/analysis/789
+```
+
+### Expected Interview Response:
 ```json
 {
-    "message": "Application submitted successfully",
     "data": {
         "id": "456",
-        "job_id": "123",
-        "first_name": "John",
-        "last_name": "Doe",
-        "resume_url": "https://example.com/resume.pdf",
-        "linkedin_url": "https://linkedin.com/in/johndoe",
-        "portfolio_url": "https://johndoe.dev",
-        "github_url": "https://github.com/johndoe",
-        "status": "pending",
-        "created_at": "2024-02-23T01:09:55.976Z"
+        "applicant_id": "123",
+        "transcript": "Interview transcript text...",
+        "overall_rating": 85,
+        "summary": "Strong candidate with excellent technical skills...",
+        "created_at": "2024-02-23T01:09:55.976Z",
+        "analysis": [
+            {
+                "id": "789",
+                "interview_id": "456",
+                "skill_name": "System Design",
+                "skill_score": 90,
+                "skill_reasoning": "Demonstrated strong understanding of distributed systems...",
+                "created_at": "2024-02-23T01:10:55.976Z"
+            }
+        ]
     }
 }
 ```
