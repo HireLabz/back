@@ -1,43 +1,69 @@
 import { supabase } from "../../config/supabase.config.ts";
-import type { InterviewEvaluation } from "../openai/evaluation.service.ts";
-import type { CallTranscript } from "../elevenlabs/transcript.service.ts";
+import { TranscriptMessage } from "../elevenlabs/transcript.service.ts";
+import { Evaluation } from "../openai/evaluation.service.ts";
+
 
 export interface InterviewRecord {
     id: string;
-    call_sid: string;
-    candidate_name: string;
-    position: string;
-    transcript: CallTranscript;
-    evaluation: InterviewEvaluation;
     created_at: string;
-    updated_at: string;
+    applicant_id: number;
+    transcript: string;
+    overall_rating: number;
+    summary: string;
 }
 
 export async function storeInterviewResults(
-    callSid: string,
-    transcript: CallTranscript,
-    evaluation: InterviewEvaluation
+    transcript: [TranscriptMessage],
+    evaluation: Evaluation
 ): Promise<InterviewRecord | null> {
     try {
         console.log("[DB Service] Storing interview results");
 
-        const { data, error } = await supabase
+        const APPLICANT_ID = 8; // TODO USER ID: Ita remove hardcode
+
+        // Do not store if interview entry already exists
+        const { data } = await supabase
             .from('interviews')
-            .insert({
-                call_sid: callSid,
-                candidate_name: "John Doe", // TODO: Get from context
-                position: "Senior Software Engineer", // TODO: Get from context
-                transcript,
-                evaluation
+            .select()
+            .eq('applicant_id', APPLICANT_ID)
+            .maybeSingle();
+        if (data) {
+            return null;
+        }
+
+        const { data: interviewData, error: interviewError } = await supabase
+            .from('interviews')
+            .upsert({
+                applicant_id: APPLICANT_ID,
+                transcript: transcript,
+                overall_rating: evaluation.overall_rating,
+                summary: evaluation.summary,
             })
             .select()
             .single();
-
-        if (error) {
-            throw error;
+        if (interviewError || !interviewData) {
+            return null;
         }
 
-        return data as InterviewRecord;
+        console.log("[DB Service] Interview stored:");
+
+        for (const skill of evaluation.skills) {
+            const {error: analysisError } = await supabase
+            .from('analysis')
+            .upsert({
+                interview_id: interviewData.id,
+                skill_name: "JOAO PESSOA",
+                skill_score: skill.skill_score,
+                skill_reasoning: skill.skill_reasoning
+            });
+            if (analysisError) {
+                return null;
+            }
+        }
+
+        console.log("[DB Service] Analysis stored");
+
+        return interviewData as InterviewRecord;
     } catch (error) {
         console.error("[DB Service] Error:", error);
         return null;
