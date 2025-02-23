@@ -94,9 +94,9 @@ export async function evaluateInterview(transcript: [TranscriptMessage]): Promis
           });
         
         let data = await response.json();
-        data = data.choices[0].message.function_call.arguments;
+        data = JSON.parse(data.choices[0].message.function_call.arguments);
         return data;
-        
+
     } catch (error) {
         console.error("[Evaluation Service] Error:", error);
         return null;

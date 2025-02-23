@@ -34,13 +34,11 @@ export async function callCritic(callId: string): Promise<void> {
         }
         console.log("Finished running evaluation")
 
-        // TODO: Itamar check this out
         // 3. Store results
-        const record = await storeInterviewResults(callId, transcript, evaluation);
+        const record = await storeInterviewResults(transcript, evaluation);
         if (!record) {
             throw new Error("Failed to store interview results");
         }
-
         console.log("[Critic Service] Successfully processed interview:", record.id);
 
         // 4. Could trigger additional actions here:
