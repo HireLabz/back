@@ -25,12 +25,14 @@ export async function callCritic(callId: string): Promise<void> {
         if (!transcript) {
             throw new Error("Failed to fetch transcript");
         }
+        console.log("Finished fetching transcript")
 
         // 2. Evaluate interview
         const evaluation = await evaluateInterview(transcript);
         if (!evaluation) {
             throw new Error("Failed to evaluate interview");
         }
+        console.log("Finished running evaluation")
 
         // TODO: Itamar check this out
         // 3. Store results
