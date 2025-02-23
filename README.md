@@ -9,6 +9,8 @@ An automated interview screening system powered by ElevenLabs AI, Twilio, and Op
 - 📧 Email communications via React Email & Resend
 - 🤖 Natural language processing with OpenAI
 - 🔄 Webhook integration for dynamic interview content
+- 📊 Automated interview evaluation and feedback
+- 💾 Interview transcription and storage
 
 ## Prerequisites
 
@@ -50,7 +52,11 @@ deno install
 │   │   └── webhook/
 │   ├── routes/         # API routes
 │   ├── types/         # TypeScript types
-│   └── services/      # Business logic
+│   ├── services/      # Business logic
+│   │   ├── elevenlabs/  # Voice & transcript services
+│   │   ├── openai/     # Interview evaluation
+│   │   └── db/         # Data storage
+│   └── middleware/    # Custom middleware
 ├── emails/            # Email templates
 ├── tests/            # Test files
 └── main.ts           # Application entry
@@ -77,8 +83,20 @@ deno task test
 
 ### Webhook
 - `POST /api/webhook/twilio/interview` - Handle Twilio interview calls
+- `POST /api/webhook/twilio/status` - Process call status updates
 
-## Testing the Webhook
+## Interview Flow
+
+1. Candidate receives interview invitation
+2. Candidate calls the Twilio number
+3. ElevenLabs AI conducts the interview
+4. When call completes:
+   - Call transcript is fetched
+   - OpenAI evaluates the interview
+   - Results are stored
+   - Notifications are sent
+
+## Testing the Webhooks
 
 1. Start the development server:
 ```bash
@@ -90,17 +108,21 @@ deno task dev
 ngrok http 8000
 ```
 
-3. Use the ngrok URL in your ElevenLabs webhook configuration:
+3. Use the ngrok URLs in your Twilio configuration:
 ```
+# Interview webhook (goes in elevenlabs)
 https://your-ngrok-url.ngrok.io/api/webhook/twilio/interview
+
+# Status webhook (goes in twillio)
+https://your-ngrok-url.ngrok.io/api/webhook/twilio/status
 ```
 
-4. Run the webhook tests:
+### Test Status Webhook
 ```bash
-deno task test
+curl -X POST http://localhost:8000/api/webhook/twilio/status \
+-H "Content-Type: application/x-www-form-urlencoded" \
+-d "CallSid=CA202d9ee8b1bb71f2ee332b80cb6f9b3d&CallStatus=completed&Duration=5&Caller=%2B16172512600&Timestamp=Sun%2C%2023%20Feb%202025%2001%3A09%3A55%20%2B0000"
 ```
-
-## Making Test Requests
 
 ### Test Email Invitation
 ```bash
@@ -122,18 +144,6 @@ curl -X POST http://localhost:8000/api/email/send-invite \
       "department": "Engineering"
     }
   }
-}'
-```
-
-### Test Webhook
-```bash
-curl -X POST http://localhost:8000/api/webhook/twilio/interview \
--H "Content-Type: application/json" \
--d '{
-  "caller_id": "+1234567890",
-  "agent_id": "7c9ECtwO3ZcGR2Z77mEO",
-  "called_number": "+18884118583",
-  "call_sid": "test_call_123"
 }'
 ```
 
