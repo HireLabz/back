@@ -11,8 +11,8 @@ export async function fetchTranscript(callId: string): Promise<[TranscriptMessag
         const response = await fetch(ELEVEN_LABS_TRANSCRIPT_URL + callId, {
             method: "GET",
             headers: {
-              "xi-api-key": ELEVEN_LABS_API_KEY,
-              "Content-Type": "application/json"
+                "xi-api-key": ELEVEN_LABS_API_KEY,
+                "Content-Type": "application/json"
             }
           });
         

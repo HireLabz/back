@@ -1,3 +1,4 @@
+import { supabase } from "../../config/supabase.config.ts";
 import type { InterviewEvaluation } from "../openai/evaluation.service.ts";
 import type { CallTranscript } from "../elevenlabs/transcript.service.ts";
 
@@ -19,19 +20,24 @@ export async function storeInterviewResults(
 ): Promise<InterviewRecord | null> {
     try {
         console.log("[DB Service] Storing interview results");
-        // TODO: Implement actual database storage
 
-        // Mock stored record
-        return {
-            id: crypto.randomUUID(),
-            call_sid: callSid,
-            candidate_name: "John Doe",
-            position: "Senior Software Engineer",
-            transcript,
-            evaluation,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        };
+        const { data, error } = await supabase
+            .from('interviews')
+            .insert({
+                call_sid: callSid,
+                candidate_name: "John Doe", // TODO: Get from context
+                position: "Senior Software Engineer", // TODO: Get from context
+                transcript,
+                evaluation
+            })
+            .select()
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data as InterviewRecord;
     } catch (error) {
         console.error("[DB Service] Error:", error);
         return null;

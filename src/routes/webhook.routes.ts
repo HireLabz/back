@@ -8,7 +8,7 @@ const router = new Router();
 router
     .post("/twilio/interview", handleTwilioWebhook)
     .post("/twilio/status", handleTwilioStatusWebhook)
-    
+    // TODO: Remove this before deploying
     // Exposing critic service as API for testing
     .post("/critic", async (ctx) => {
         const body = ctx.request.body;
