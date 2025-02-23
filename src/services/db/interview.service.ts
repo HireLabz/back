@@ -14,18 +14,19 @@ export interface InterviewRecord {
 
 export async function storeInterviewResults(
     transcript: [TranscriptMessage],
-    evaluation: Evaluation
+    evaluation: Evaluation,
+    applicantId: string
 ): Promise<InterviewRecord | null> {
     try {
         console.log("[DB Service] Storing interview results");
 
-        const APPLICANT_ID = 8; // TODO USER ID: Ita remove hardcode
+        // const APPLICANT_ID = 21; // TODO USER ID: Ita remove hardcode
 
         // Do not store if interview entry already exists
         const { data } = await supabase
             .from('interviews')
             .select()
-            .eq('applicant_id', APPLICANT_ID)
+            .eq('applicant_id', applicantId)
             .maybeSingle();
         if (data) {
             return null;
@@ -34,7 +35,7 @@ export async function storeInterviewResults(
         const { data: interviewData, error: interviewError } = await supabase
             .from('interviews')
             .upsert({
-                applicant_id: APPLICANT_ID,
+                applicant_id: applicantId,
                 transcript: transcript,
                 overall_rating: evaluation.overall_rating,
                 summary: evaluation.summary,
@@ -48,14 +49,14 @@ export async function storeInterviewResults(
         console.log("[DB Service] Interview stored:");
 
         for (const skill of evaluation.skills) {
-            const {error: analysisError } = await supabase
-            .from('analysis')
-            .upsert({
-                interview_id: interviewData.id,
-                skill_name: "JOAO PESSOA",
-                skill_score: skill.skill_score,
-                skill_reasoning: skill.skill_reasoning
-            });
+            const { error: analysisError } = await supabase
+                .from('analysis')
+                .upsert({
+                    interview_id: interviewData.id,
+                    skill_name: skill.skill_name,
+                    skill_score: skill.skill_score,
+                    skill_reasoning: skill.skill_reasoning
+                });
             if (analysisError) {
                 return null;
             }

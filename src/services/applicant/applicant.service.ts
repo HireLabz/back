@@ -1,6 +1,6 @@
 import { supabase } from "../../config/supabase.config.ts";
 
-export type ApplicantStatus = 'pending' | 'interviewing' | 'completed';
+export type ApplicantStatus = 'pending' | 'interviewing' | 'interviewed';
 
 export interface UpdateApplicantData {
     status?: ApplicantStatus;

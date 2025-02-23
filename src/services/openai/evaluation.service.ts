@@ -12,11 +12,11 @@ export interface Evaluation {
     skills: Array<EvaluationSkills>;
 }
 
-export async function evaluateInterview(transcript: [TranscriptMessage]): Promise<Evaluation | null> {
+export async function evaluateInterview(transcript: [TranscriptMessage], userName: string = "Itamar"): Promise<Evaluation | null> {
     try {
         let parsed_transcript = "";
         for (const message of transcript) {
-            const role = message.role == "user" ? "Danilo" : "Eleven Labs";
+            const role = message.role == "user" ? userName : "Eleven Labs";
             parsed_transcript += `${role}: ${message.message}\n`;
         }
 

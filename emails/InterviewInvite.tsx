@@ -49,7 +49,7 @@ export interface InterviewInvitationEmailProps {
 const InterviewInvitationEmail = ({
     company = {
         name: 'ElevenLabs',
-        logoUrl: 'https://eleven-public-cdn.elevenlabs.io/payloadcms/9trrmnj2sj8-logo-logo.svg',
+        logoUrl: 'https://11labs-nonprd-15f22c1d.s3.eu-west-3.amazonaws.com/0b9cd3e1-9fad-4a5b-b3a0-c96b0a1f1d2b/elevenlabs-logo-black.png',
         recruiterCompany: 'HireLabz'
     },
     candidate = {
@@ -93,13 +93,13 @@ const InterviewInvitationEmail = ({
             <Preview>{previewText}</Preview>
             <Body style={main}>
                 <Container style={container}>
-                    <Img
+                    {/* <Img
                         src={company.logoUrl}
                         width="600"
                         height="200"
                         alt={company.name}
                         style={logo}
-                    />
+                    /> */}
                     <Heading style={heading}>Interview Invitation</Heading>
                     <Text style={paragraph}>Dear {candidate.name},</Text>
                     <Text style={paragraph}>
