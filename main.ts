@@ -5,6 +5,7 @@ import { oakCors } from "https://deno.land/x/cors/mod.ts";
 // Routes
 import { emailRouter } from "./src/routes/email.routes.ts";
 import { webhookRouter } from "./src/routes/webhook.routes.ts";
+import { jobRouter } from "./src/routes/job.routes.ts";
 // import { interviewRouter } from "./src/routes/interview.routes.ts";
 // import { authRouter } from "./src/routes/auth.routes.ts";
 
@@ -39,6 +40,7 @@ router
 app.use(router.routes());
 app.use(emailRouter.prefix("/api/email").routes());
 app.use(webhookRouter.prefix("/api/webhook").routes());
+app.use(jobRouter.prefix("/api").routes());
 // app.use(interviewRouter.prefix("/api/interview").routes());
 // app.use(authRouter.prefix("/api/auth").routes());
 
