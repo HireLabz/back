@@ -32,6 +32,7 @@ export async function applyForJob(ctx: Context) {
                 linkedin_url: applicationData.linkedin_url,
                 portfolio_url: applicationData.portfolio_url,
                 github_url: applicationData.github_url,
+                phone_number: applicationData.phone_number,
                 email: applicationData.email,
                 status: 'pending',
                 created_at: new Date().toISOString()
@@ -165,6 +166,7 @@ export async function updateApplication(ctx: Context) {
             resume_url: applicationData.resume_url,
             linkedin_url: applicationData.linkedin_url,
             portfolio_url: applicationData.portfolio_url,
+            phone_number: applicationData.phone_number,
             github_url: applicationData.github_url
         });
 

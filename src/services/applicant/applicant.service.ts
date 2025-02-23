@@ -8,6 +8,7 @@ export interface UpdateApplicantData {
     linkedin_url?: string;
     portfolio_url?: string;
     github_url?: string;
+    phone_number?: string;
 }
 
 export async function updateApplicant(
@@ -33,6 +34,7 @@ export async function updateApplicant(
             linkedin_url: data.linkedin_url ?? currentApplication.linkedin_url,
             portfolio_url: data.portfolio_url ?? currentApplication.portfolio_url,
             github_url: data.github_url ?? currentApplication.github_url,
+            phone_number: data.phone_number ?? currentApplication.phone_number,
             updated_at: new Date().toISOString()
         };
 

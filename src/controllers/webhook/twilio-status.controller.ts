@@ -1,5 +1,6 @@
 import { Context } from "https://deno.land/x/oak/mod.ts";
 import { callCritic } from "../../services/elevenlabs/critic.service.ts";
+import { supabase } from "../../config/supabase.config.ts";
 
 interface TwilioStatusCallback {
     CallSid: string;
@@ -10,9 +11,28 @@ interface TwilioStatusCallback {
     [key: string]: string;
 }
 
+async function getApplicantIdFromPhone(phoneNumber: string): Promise<string> {
+    console.log("Getting applicant ID from phone number:", phoneNumber);
+    const { data: applicant, error } = await supabase
+        .from('applicants')
+        .select('id')
+        .eq('phone_number', phoneNumber)
+        .single();
+    console.log("applicant: ", applicant);
+    if (error || !applicant) {
+        console.error('Error fetching applicant:', error);
+        throw new Error(`Applicant not found for phone number: ${phoneNumber}`);
+    }
+
+    return applicant.id;
+}
+
 async function handleCompletedCall(data: TwilioStatusCallback) {
     console.log(`Processing completed call ${data.CallSid}`);
-    await callCritic(data.CallSid);
+
+    // Get applicant ID from the caller's phone number
+    const applicantId = await getApplicantIdFromPhone(data.Caller);
+    await callCritic(data.CallSid, applicantId);
 }
 
 export async function handleTwilioStatusWebhook(ctx: Context) {
