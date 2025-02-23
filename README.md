@@ -65,6 +65,9 @@ deno install
 ## Available Commands
 
 ```bash
+# Load .env
+source .env
+
 # Start development server with watch mode
 deno task dev
 
