@@ -15,6 +15,7 @@
         "@react-email/components": "https://esm.sh/@react-email/components@0.0.15",
         "resend": "https://esm.sh/resend@3.5.0",
         "oak": "https://deno.land/x/oak/mod.ts",
-        "dotenv": "https://deno.land/std/dotenv/mod.ts"
+        "dotenv": "https://deno.land/std/dotenv/mod.ts",
+        "supabase": "https://esm.sh/@supabase/supabase-js@2.39.7"
     }
 }
