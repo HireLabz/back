@@ -66,7 +66,7 @@ const InterviewInvitationEmail = ({
         phoneNumber: '+1234567890'
     },
     interviewDetails = {
-        duration: '15 minutes',
+        duration: '10 minutes',
         whatToExpect: 'The interview will begin with a brief introduction and discussion about your background. This will be followed by a technical assessment where we\'ll explore your problem-solving approach. We\'ll conclude with a Q&A session where you can learn more about the role and our team.',
         topicsToDiscuss: 'We will discuss your experience with voice technology, machine learning, and scalable systems. We\'re particularly interested in hearing about your approach to solving complex technical challenges and how you collaborate with cross-functional teams.',
         preparationResources: [
