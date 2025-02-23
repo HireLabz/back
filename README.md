@@ -230,6 +230,7 @@ curl -X POST http://localhost:8000/api/applications \
     "job_id": "123",
     "first_name": "John",
     "last_name": "Doe",
+    "email": "john.doe@example.com",
     "resume_url": "https://example.com/resume.pdf",
     "linkedin_url": "https://linkedin.com/in/johndoe",
     "portfolio_url": "https://johndoe.dev",

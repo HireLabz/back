@@ -1,6 +1,7 @@
 import { fetchTranscript } from "./transcript.service.ts";
 import { evaluateInterview } from "../openai/evaluation.service.ts";
 import { storeInterviewResults } from "../db/interview.service.ts";
+import { updateApplicant } from "../applicant/applicant.service.ts";
 
 export interface CallCriticism {
     call_id: string;
@@ -18,7 +19,7 @@ export interface CallCriticism {
 }
 
 // TODO: Brandon check this out
-export async function callCritic(callId: string): Promise<void> {
+export async function callCritic(callId: string, applicantId: string): Promise<void> {
     try {
         // 1. Fetch transcript
         const transcript = await fetchTranscript(callId);
@@ -41,9 +42,11 @@ export async function callCritic(callId: string): Promise<void> {
 
         console.log("[Critic Service] Successfully processed interview:", record.id);
 
-        // 4. Could trigger additional actions here:
+        // 4. Update applicant status
+        await updateApplicant(applicantId, { status: 'completed' });
+
+        // 5. Could trigger additional actions here:
         // - Send email notifications
-        // - Update interview status
         // - Trigger next steps in hiring process
 
     } catch (error) {

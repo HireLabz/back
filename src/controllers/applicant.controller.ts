@@ -1,6 +1,7 @@
 import { Context } from "https://deno.land/x/oak/mod.ts";
 import { supabase } from "../config/supabase.config.ts";
 import { sendInterviewInvitationEmail } from "../emailService.ts";
+import { updateApplicant } from "../services/applicant/applicant.service.ts";
 
 export async function applyForJob(ctx: Context) {
     try {
@@ -159,38 +160,22 @@ export async function updateApplication(ctx: Context) {
         const body = ctx.request.body;
         const applicationData = await body.json();
 
-        // First check if application exists
-        const { data: existingApplication, error: checkError } = await supabase
-            .from('applicants')
-            .select('id')
-            .eq('id', applicationId)
-            .single();
-
-        if (checkError || !existingApplication) {
-            ctx.response.status = 404;
-            ctx.response.body = { error: "Application not found" };
-            return;
-        }
-
-        const { data, error } = await supabase
-            .from('applicants')
-            .update({
-                status: applicationData.status,
-                resume_url: applicationData.resume_url,
-                linkedin_url: applicationData.linkedin_url,
-                portfolio_url: applicationData.portfolio_url,
-                github_url: applicationData.github_url,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', applicationId)
-            .select()
-            .single();
-
-        if (error) throw error;
+        const data = await updateApplicant(applicationId, {
+            status: applicationData.status,
+            resume_url: applicationData.resume_url,
+            linkedin_url: applicationData.linkedin_url,
+            portfolio_url: applicationData.portfolio_url,
+            github_url: applicationData.github_url
+        });
 
         ctx.response.status = 200;
         ctx.response.body = { message: "Application updated successfully", data };
-    } catch (error) {
+    } catch (error: unknown) {
+        if (error instanceof Error && error.message === "Application not found") {
+            ctx.response.status = 404;
+            ctx.response.body = { error: error.message };
+            return;
+        }
         console.error("[Applicant Controller] Error:", error);
         ctx.response.status = 500;
         ctx.response.body = { error: "Failed to update application" };
